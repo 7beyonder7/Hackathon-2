@@ -5,7 +5,7 @@
 # Installation:
 #   pip install -r requirements.txt
 #
-# For CUDA support (recommended), install PyTorch first:
+# For CUDA support, install PyTorch first:
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 #
 # =============================================================================
