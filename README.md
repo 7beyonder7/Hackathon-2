@@ -1,5 +1,8 @@
 # SDXL + CLIP Reranking Pipeline
 
+The project uses heavy computations (e.g. A100 GPU), link to collab for running:
+**https://colab.research.google.com/drive/1sNkVHt2U-l5Pxab51XJsyqXyOA1VXbb-?usp=sharing**
+
 A high-quality image generation pipeline that uses **Stable Diffusion XL** (or **SD 3.5 Large**) with **CLIP-based reranking** to automatically select the best generated image.
 
 ## 🎯 Overview
@@ -15,10 +18,12 @@ The pipeline generates multiple image candidates and uses CLIP (Contrastive Lang
 ## ✨ Features
 
 - **Two Generation Modes:**
+
   - **Mode A (user_prompt):** Direct text-to-image with your prompt
   - **Mode B (auto_prompt):** LLM converts long text/articles into optimized image prompts
 
 - **Smart Model Selection:**
+
   - `fast` / `quality_1min` presets → SDXL Base + Refiner
   - `quality_max` preset → SD 3.5 Large
 
@@ -44,24 +49,27 @@ USE_TORCH_COMPILE = False # Enable for 10-30% speedup
 ### 2. Generate Images
 
 **Mode A: Direct Prompt**
+
 ```python
 result = generate_image(prompt="A golden retriever puppy playing in autumn leaves")
 ```
 
 **Mode B: Auto-Prompt from Text**
+
 ```python
 article = """
-Climate scientists have observed unprecedented changes in Arctic ice patterns. 
+Climate scientists have observed unprecedented changes in Arctic ice patterns.
 Polar bears and Arctic foxes are among the species most affected...
 """
 result = generate_image(mode="auto_prompt", text=article)
 ```
 
 ### 3. View All Candidates
+
 ```python
 result = generate_image(
-    prompt="A cozy coffee shop interior", 
-    show=False, 
+    prompt="A cozy coffee shop interior",
+    show=False,
     return_candidates_images=True
 )
 
@@ -76,11 +84,11 @@ for img, cand in zip(result["candidate_images"], result["candidates"]):
 
 ### Presets
 
-| Preset | Model | Resolution | Candidates | Speed | Quality |
-|--------|-------|------------|------------|-------|---------|
-| `fast` | SDXL | 768×768 | 2 | ~20s | Good |
-| `quality_1min` | SDXL + Refiner | 1024×1024 | 2-4 | ~60s | Better |
-| `quality_max` | SD 3.5 Large | 1024×1024 | 3-5 | ~90s | Best |
+| Preset         | Model          | Resolution | Candidates | Speed | Quality |
+| -------------- | -------------- | ---------- | ---------- | ----- | ------- |
+| `fast`         | SDXL           | 768×768    | 2          | ~20s  | Good    |
+| `quality_1min` | SDXL + Refiner | 1024×1024  | 2-4        | ~60s  | Better  |
+| `quality_max`  | SD 3.5 Large   | 1024×1024  | 3-5        | ~90s  | Best    |
 
 ### Custom Configuration
 
@@ -131,12 +139,12 @@ result = generate_image(prompt="Your prompt", cfg=custom_cfg)
 
 ### CLIP Score Interpretation
 
-| Score | Quality |
-|-------|---------|
-| < 0.20 | Poor - image doesn't match prompt well |
-| 0.20 - 0.25 | Decent |
-| 0.25 - 0.30 | Good ✓ |
-| > 0.30 | Excellent ✓✓ |
+| Score       | Quality                                |
+| ----------- | -------------------------------------- |
+| < 0.20      | Poor - image doesn't match prompt well |
+| 0.20 - 0.25 | Decent                                 |
+| 0.25 - 0.30 | Good ✓                                 |
+| > 0.30      | Excellent ✓✓                           |
 
 ### Seed Explained
 
@@ -178,6 +186,7 @@ if is_llama:
 ### JSON Serialization Error
 
 Fixed in v2. The issue was logging PIL Images. Solution:
+
 ```python
 # Log without images
 log_rec = {...}  # no images
@@ -205,11 +214,13 @@ if return_candidates_images:
 ## 🧠 How It Works
 
 ### 1. Prompt Processing
+
 ```
 User prompt → Content filter → Add style suffix → Normalize
 ```
 
 ### 2. Image Generation
+
 ```
 SDXL Base (N images) → [Optional: SDXL Refiner] → N candidate images
         OR
@@ -217,6 +228,7 @@ SD 3.5 Large (N images) → N candidate images
 ```
 
 ### 3. CLIP Reranking
+
 ```
 For each image:
     text_embedding = CLIP.encode(prompt)
@@ -227,6 +239,7 @@ Select image with highest score
 ```
 
 ### 4. Quality Gate
+
 ```
 if best_score < clip_min:
     return {"ok": False, "reason": "low_clip_alignment"}
@@ -250,14 +263,14 @@ Pillow
 
 ## 🔗 Models Used
 
-| Component | Model | Size |
-|-----------|-------|------|
-| SDXL Base | `stabilityai/stable-diffusion-xl-base-1.0` | ~6.5 GB |
-| SDXL Refiner | `stabilityai/stable-diffusion-xl-refiner-1.0` | ~6.5 GB |
-| SD 3.5 Large | `stabilityai/stable-diffusion-3.5-large` | ~16 GB |
-| CLIP | `openai/clip-vit-large-patch14` | ~1.7 GB |
-| LLM (optional) | `meta-llama/Llama-3.1-8B-Instruct` | ~16 GB |
-| LLM (fallback) | `Qwen/Qwen2.5-7B-Instruct` | ~14 GB |
+| Component      | Model                                         | Size    |
+| -------------- | --------------------------------------------- | ------- |
+| SDXL Base      | `stabilityai/stable-diffusion-xl-base-1.0`    | ~6.5 GB |
+| SDXL Refiner   | `stabilityai/stable-diffusion-xl-refiner-1.0` | ~6.5 GB |
+| SD 3.5 Large   | `stabilityai/stable-diffusion-3.5-large`      | ~16 GB  |
+| CLIP           | `openai/clip-vit-large-patch14`               | ~1.7 GB |
+| LLM (optional) | `meta-llama/Llama-3.1-8B-Instruct`            | ~16 GB  |
+| LLM (fallback) | `Qwen/Qwen2.5-7B-Instruct`                    | ~14 GB  |
 
 ---
 
