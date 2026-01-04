@@ -3,6 +3,8 @@
 The project uses heavy computations (e.g. A100 GPU), link to collab for running:
 **https://colab.research.google.com/drive/1sNkVHt2U-l5Pxab51XJsyqXyOA1VXbb-?usp=sharing**
 
+stabilityai/stable-diffusion-3.5-large and Meta's Llama 3.1 models & evals (optional) need to be available in your Hugging Face account (e.g. with Request Status 'Accepted' on https://huggingface.co/settings/gated-repos)
+
 A high-quality image generation pipeline that uses **Stable Diffusion XL** (or **SD 3.5 Large**) with **CLIP-based reranking** to automatically select the best generated image.
 
 ## 🎯 Overview
@@ -277,6 +279,8 @@ Pillow
 ## 📝 License
 
 This project uses models with various licenses. Check individual model cards on Hugging Face for terms.
+
+stabilityai/stable-diffusion-3.5-large and Meta's Llama 3.1 models & evals (optional) need to be available in your Hugging Face account (e.g. with Request Status 'Accepted' on https://huggingface.co/settings/gated-repos)
 
 ---
 
